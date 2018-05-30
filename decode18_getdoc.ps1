@@ -1,8 +1,8 @@
 #ダウンロード先を指定してね
-$saveDirectory = "d:\Downloads\"
+$saveDirectory = "d:\decode2018_doc\"
 
 $client = New-Object System.Net.WebClient
-$downloadUrl = "https://eventmarketing.blob.core.windows.net/decode2018doc/"
+$downloadUrl = "https://eventmarketing.blob.core.windows.net/decode2018-after/"
 
 # 存在するセッション(サイトからぶっこ抜いたやつ）
 $tracks = (
@@ -14,20 +14,33 @@ $tracks = (
 "SP01", "SP02", "SP03", "SP04", "SP05", "SP06", "SP07", "SP08", "SP61", "SP62"
 )
 
-#資料の拡張子（要確認）
+#資料の拡張子
 $exts = (".pptx", ".pdf")
+
+[System.Console]::WriteLine("▼START")
 
 foreach ($track in $tracks) 
 {
     $compCount = 0
     foreach ($ext in $exts) 
     {
-        $fileName = $track + $ext
+        $pref = ""
+        if($ext -eq ".pptx")
+        {
+            $pref = "PPT"
+        }
+        else
+        {
+            $pref = "PDF"
+        }
+        $fileName = [string]::Format("decode2018_{0}_{1}{2}", $pref, $track, $ext)
+
         try 
         {
             $client.DownloadFile([System.IO.Path]::Combine($downloadUrl, $fileName), [System.IO.Path]::Combine($saveDirectory, $fileName))
             $compCount++
             [System.Console]::WriteLine("○: " + $fileName)
+            break
         }
         catch
         {
@@ -38,3 +51,4 @@ foreach ($track in $tracks)
         [System.Console]::WriteLine("×: " + $track)
     }
 }
+[System.Console]::WriteLine("▲END")
